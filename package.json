@@ -2,16 +2,17 @@
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "express": "^4.21.0",
-    "mysql2": "^3.11.2"
+    "express": "^4.19.2",
+    "mavic": "^0.0.1",
+    "path": "^0.12.7"
   },
-  "name": "kstewart_a2_api",
+  "name": "kstewart_a2",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": ""

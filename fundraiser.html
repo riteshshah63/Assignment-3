@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>home</title>
+    <style>
+        /*cs for styling all sections of the html*/
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+
+        .navbar {
+            background-color: #4a90e2;
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .search-container {
+            float: right;
+            padding: 14px 16px;
+        }
+
+        .content {
+            text-align: center;
+            padding: 16px;
+            margin: 0 auto;
+            max-width: 1000px;
+            background-color: #ffffff;
+        }
+
+        .content2 {
+            padding: 16px;
+            margin: 0 auto;
+            max-width: 1000px;
+            background-color: #ffffff;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <a href="/fundraisersapp/">Home</a>
+        <a href="/fundraisersapp/search">Search</a>
+        <a href="/fundraisersapp/donation">Donation</a>
+        <div class="search-container">
+            <form action="/fundraisersapp/search">
+                <input type="text" placeholder="Search Fundraisers....">
+                <button>Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>FUNDRAISERS'R'US</h1>
+    </div>
+    <div class="content2">
+        <h2>Welcome to our fundraising website.</h2>
+        <p>At FUNDRAISERS'R'US, we believe in the power of collective action. Whether you want to support a cause close to your heart, help a community in need,
+         or raise funds for an urgent campaign, we’re here to provide you with the tools to make it happen.</p>
+    </div>
+    <div class="content2"><p>Active Fundraisers/ donation history:</p></div>
+    <div id="homepagedata" class="content2"></div>
+
+    <script>
+
+        fetch("https://23928266.it.scu.edu.au/Dataserv")
+            .then(response => response.json())
+            .then(homepagedata => {
+                //document.getElementById("homepagedata").textContent="successfully loaded data";
+                const datadiv=document.getElementById('homepagedata');
+                datadiv.innerHTML="";
+
+                if(homepagedata.length>0) {
+                    homepagedata.forEach(fundraiser => {
+                        const newP=document.createElement("P");
+                        newP.textContent=`Fundraiser: ${fundraiser.CAPTION}, ID: ${fundraiser.FUNDRAISER_ID}, Hosted By: ${fundraiser.ORGANIZER}, Donation Made: ${fundraiser.DATE} Amount Donated: ${fundraiser.AMOUNT}, Made By: ${fundraiser.GIVER}`;
+                        datadiv.appendChild(newP);
+
+                        const newP3 = document.createElement("P");
+                        newP3.innerHTML = `<a href="/fundraisersapp/fundraiser_info?id=${fundraiser.FUNDRAISER_ID}">Info</a>`;
+                        datadiv.appendChild(newP3);
+                        
+                        const newP4 = document.createElement("P");
+                        newP4.innerHTML = `<a href="/fundraisersapp/donation?id=${fundraiser.FUNDRAISER_ID}">Donate</a>`;
+                        datadiv.appendChild(newP4);
+                        
+                        
+                    });
+                }
+                
+                else{
+                    datadiv.textContent="no data found!!";
+                }
+                
+            })
+            .catch(error => {
+                console.error("error fetching data", error);
+                document.getElementById("homepagedata").textContent="failed to load data";
+            });
+
+    </script>
+
+</body>
+</html>

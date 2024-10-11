@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>home</title>
+    <style>
+        /*cs for styling all sections of the html*/
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+
+        .navbar {
+            background-color: #4a90e2;
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .search-container {
+            float: right;
+            padding: 14px 16px;
+        }
+
+        .content {
+            text-align: center;
+            padding: 16px;
+            margin: 0 auto;
+            max-width: 1000px;
+            background-color: #ffffff;
+        }
+
+        .content2 {
+            padding: 16px;
+            margin: 0 auto;
+            max-width: 1000px;
+            background-color: #ffffff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="/fundraisersapp/">Home</a>
+        <a href="/fundraisersapp/search">Search</a>
+        <a href="/fundraisersapp/donation">Donation</a>
+        <div class="search-container">
+            <form action="/fundraisersapp/search">
+                <input type="text" placeholder="Search Fundraisers....">
+                <button>Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>FUNDRAISERS'R'US</h1>
+    </div>
+    <div class="content2">
+        <h2>Welcome to our fundraising website.</h2>
+        <p>At FUNDRAISERS'R'US, we believe in the power of collective action. Whether you want to support a cause close to your heart, help a community in need,
+         or raise funds for an urgent campaign, we’re here to provide you with the tools to make it happen. Feel Free to make a donation here!!!!!!!.</p>
+    </div>
+    
+    <div id="homepagedata" class="content2">
+
+    </div>
+
+    <p class="content">Make A New Donation!!!!:</p>
+    <form id="donationForm" class="content" onsubmit="validateForm(); return(false);">
+      <label>Fundraiser ID</label>
+      <input type="number" id="txtFundraiserID" placeholder="Enter Fundraiser ID" required><br>
+
+      <label>Your Name</label>
+      <input type="text" id="txtGiverName" placeholder="Enter Your Name" required><br>
+
+      <label>Donation Amount</label>
+      <input type="number" id="txtAmount" placeholder="Enter Donation Amount" required><br>
+
+      <label>Donation Date</label>
+      <input type="text" id="txtDate" placeholder="Enter date dd/mm/yy" required><br>
+
+      <input type="submit" value="Submit my donation">
+      <input type="reset" value="Clear">
+    </form>
+
+    <script>
+        function validateForm() {
+          // Get values from the form 
+          const FundraiserID = document.getElementById('txtFundraiserID').value.trim();
+          const GiverName = document.getElementById('txtGiverName').value.trim();
+          const Amount = document.getElementById('txtAmount').value.trim();
+          const DonationDate = document.getElementById('txtDate').value.trim();
+
+          if (!FundraiserID || !GiverName || !Amount || !DonationDate) {
+              alert("All fields are required!");
+              return;
+          }
+
+          if (parseInt(Amount) < 5) {
+            alert("The minimum donation amount is 5 AUD.");
+            return;
+        }
+
+            // Create object with data inputted by the user making sure data types are correct
+            const postData = {
+            'FUNDRAISER_ID': parseInt(FundraiserID),
+            'DATE': DonationDate,
+            'AMOUNT': parseInt(Amount), 
+            'GIVER': GiverName
+            };
+
+          // Send the POST request to API server
+          fetch(`https://23928266.it.scu.edu.au/Dataserv/`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(postData)
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.insert === 'success') {
+                  alert("Thank you for your donation to fundraiser ID: " + FundraiserID);
+                  document.getElementById('donationForm').reset();                 
+              } else if (data.insert === 'error') {
+                  alert("Error: " + data.message);
+              }
+          })
+          .catch(error => {
+              console.error("Error:", error);
+          });
+        }
+    </script>
+    
+    <script>
+    // getting id number from the URL
+    const url = window.location.href;  //reference for method https://ui.dev/get-current-url-javascript
+    const fundraiserId = url.split('id=')[1];
+
+    // get the specific fundraiser data using fetch and the ID retrieved above
+    if (fundraiserId) {
+        fetch(`https://23928266.it.scu.edu.au/Dataserv/${fundraiserId}`)
+            .then(response => response.json())
+            .then(data => {
+                const homepagedatadiv = document.getElementById('homepagedata');
+                // Clear previous content
+                homepagedatadiv.innerHTML = ""; 
+                // data is being retrieved in an array from the database this if statment allows the script to handle the array
+                if (Array.isArray(data) && data.length > 0) {
+                    // Access the first item
+                    const fundraiser = data[0];
+                    //displaying data using inner html similair to unit content 
+                    homepagedatadiv.innerHTML = 
+                        `<p>Fundraiser Title: ${fundraiser.CAPTION}</p>
+                        <p>Organizer: ${fundraiser.ORGANIZER}</p>
+                        <p>Target Funding: ${fundraiser.TARGET_FUNDING}</p>
+                        <p>Current Funding: ${fundraiser.CURRENT_FUNDING}</p>
+                        <p>City: ${fundraiser.CITY}</p>`
+                        ;
+                } else {
+                    homepagedatadiv.textContent = "No fundraiser found!";
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching fundraiser data:", error);
+                document.getElementById('homepagedata').textContent = "Error loading fundraiser data.";
+            });
+    }
+</script>
+
+</body>
+</html>
